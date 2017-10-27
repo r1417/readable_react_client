@@ -1,9 +1,6 @@
-//import React, { Component } from 'react';
 import React from 'react';
-//import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-//import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import AppBar from 'material-ui/AppBar';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import Dialog from 'material-ui/Dialog';
@@ -37,7 +34,6 @@ class TcpConsole extends React.Component {
             connectionDialogIsOpen: false,
             };
         this.connectChange = this.connectChange.bind(this);
-        this.handleKeyPress = this.handleKeyPress.bind(this);
         this.commandTextChange = this.commandTextChange.bind(this);
         this.send = this.send.bind(this);
     }
@@ -55,6 +51,9 @@ class TcpConsole extends React.Component {
         });    
     }
 
+    /*
+     * event 
+     */
     connectChange(e, isChecked){
         if(isChecked == undefined){
             isChecked = !this.state.connected;
@@ -101,13 +100,9 @@ class TcpConsole extends React.Component {
     }
 
 
-    handleKeyPress(e){
-        if(e.key == 'Enter'){
-            this.send();
-        }
-    }
-
-
+    /*
+     * async http request
+     */
     send(command){
         var cmd = this.state.command;
         if(command != undefined && command != '')  cmd = command;
@@ -147,6 +142,9 @@ class TcpConsole extends React.Component {
     }
 
 
+    /*
+     * async http request
+     */
     render() {
 
         const styleLayaoutParent = {width:'1310px',
