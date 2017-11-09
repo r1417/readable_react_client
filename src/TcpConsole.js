@@ -19,6 +19,9 @@ import $ from "jquery";
 class TcpConsole extends React.Component {
 
 
+    /*
+     * constructor
+     */
     constructor(props) {
         super(props);
 
@@ -33,29 +36,26 @@ class TcpConsole extends React.Component {
             commandList:['hello', 'bye', 'now?', 'test2'],
             connectionDialogIsOpen: false,
             };
-        this.connectChange = this.connectChange.bind(this);
-        this.commandTextChange = this.commandTextChange.bind(this);
-        this.send = this.send.bind(this);
+        //this.connectChange = this.connectChange.bind(this);  //not needed in ES2015 arrow function
+        //this.commandTextChange = this.commandTextChange.bind(this);
+        //this.send = this.send.bind(this);
     }
 
-    componentDidMount() {
-    }
 
-    componentWillUnmount() {
-    //
-    }
-
-    commandTextChange(value){
+    /*
+     * commandTextChange event
+     */
+    commandTextChange = (value) => {
         this.setState({
           command: value,
         });    
     }
 
     /*
-     * event 
+     * connectChange event
      */
-    connectChange(e, isChecked){
-        if(isChecked == undefined){
+    connectChange = (e, isChecked) => { 
+        if(isChecked === undefined){
             isChecked = !this.state.connected;
         }
         if(isChecked){
@@ -67,7 +67,7 @@ class TcpConsole extends React.Component {
                 dataType: 'json',
                 data: {},
                 cache:false,
-            }).done(function(res) {
+            }).done(res => {
                         this.setState(prevState => ({
                             log :prevState.log + '\n\n'
                                  + 'command: ' + res.result.command + '\n'
@@ -75,23 +75,21 @@ class TcpConsole extends React.Component {
                                  + 'response body: ' + JSON.stringify(res),
                             clientID:res.result.cid,
                             connectionID:res.id,  
-                        }));
-                        this.setState({connected: true});    
+                    }));
+                    this.setState({connected: true});    
 
-                        //scroll            
-                        $('#console').animate({scrollTop: $('#console')[0].scrollHeight}, 'slow');
+                    //scroll            
+                    $('#console').animate({scrollTop: $('#console')[0].scrollHeight}, 'slow');
 
-                        //dialog
-                        this.timeout = setTimeout(this.setState.bind(this, {connectionDialogIsOpen: false}) , 5000);
+                    //dialog
+                    this.timeout = setTimeout(this.setState.bind(this, {connectionDialogIsOpen: false}) , 5000);
 
-                    
-
-
-            }.bind(this))
-            .fail(function(xhr, status, err) {
+            })
+            .fail((xhr, status, err) => {
                     this.setState({connected: false});    
                     console.error(status, err.toString());
-            }.bind(this));
+                }
+            );
         
         }else{
             this.send('bye');
@@ -101,13 +99,13 @@ class TcpConsole extends React.Component {
 
 
     /*
-     * async http request
+     * async http request event
      */
-    send(command){
-        var cmd = this.state.command;
-        if(command != undefined && command != '')  cmd = command;
+    send = (command) => {
+        let cmd = this.state.command;
+        if(command !== undefined && command !== '')  cmd = command;
 
-        var requestParam = {"jsonrpc":"2.0", "method":cmd, "params":"", "id":this.state.clientID}
+        const requestParam = {"jsonrpc":"2.0", "method":cmd, "params":"", "id":this.state.clientID}
 
 
         $.ajax({
@@ -115,7 +113,7 @@ class TcpConsole extends React.Component {
             url: 'http://vz01:8070/Command?cid=' + this.state.clientID,
             dataType: 'json',
             data: requestParam,
-        }).done(function(res) {
+        }).done(res => {
                 this.setState(prevState => ({
                             log :prevState.log + '\n\n'
                                  + 'command: ' + res.result.command + '\n'
@@ -123,27 +121,28 @@ class TcpConsole extends React.Component {
                                  + 'response body: ' + JSON.stringify(res),
                             clientID:res.result.cid,
                             connectionID:res.id,  
-                        }));
+                }));
 
                 //scroll            
                 $('#console').animate({scrollTop: $('#console')[0].scrollHeight}, 'slow');
 
-                if(res.result.command=='bye' || res.result.cid==''){
+                if(res.result.command === 'bye' || res.result.cid === ''){
                     this.setState({connected: false});    
                 }
                 this.setState({command: '',});
                 this.commandTextInput.focus();
-        }.bind(this))
-            .fail(function(xhr, status, err) {
+                }
+        ).fail((xhr, status, err) => {
                     console.error(status, err.toString());
-        }.bind(this));
+                }
+        );
 
 
     }
 
 
     /*
-     * async http request
+     * react render
      */
     render() {
 
@@ -152,39 +151,39 @@ class TcpConsole extends React.Component {
                                   paddingTop:'20px',
                                   
                                   }
-        var styleLayaoutLeft = {float:'left', marginBottom:'30px'}
-        var styleLayaoutRight = {float:'right'}
+        const styleLayaoutLeft = {float:'left', marginBottom:'30px'}
+        const styleLayaoutRight = {float:'right'}
 
-        var styleTitle = {
+        const styleTitle = {
                          fontSize: '120%',
                          color:'#444444'
                          }
 
-        var stylePaper = {
+        const stylePaper = {
                          width:'620px',
                          height:'520px',
                          background:'linear-gradient(to bottom, #00BCD4 0%, #E0F7FA 100%)',
                          }
 
-        var stylePre = {whiteSpace:'pre-wrap', wordWrap:'normal', overflowY:'auto',
+        const stylePre = {whiteSpace:'pre-wrap', wordWrap:'normal', overflowY:'auto',
                          width:'600px',
                          height:'500px',
                          padding:'10px',
                          color:'#00838F',
                          };
 
-        var styleLogTitle = {color:'#444444', verticalAlign:'top',} 
-        var styleCommand = {color:'#80DEEA', verticalAlign:'baseline',} 
-        var styleStatusBar = {color:'#444444',  background:'#eeeeee', height:'50px', fontSize: '70%', }
-        var styleConnect = {maxWidth:'100px', paddingTop:'20px', float:'left',}
-        var styleConnectIcon = {color:'#FFB74D', verticalAlign:'middle',} 
-        var styleStatusRight = {float:'right', marginTop:'-21px', marginRight:'10px', padding:'0px',}
-        var styleStatusBadge = {top: '30px', right: '5px',}
+        const styleLogTitle = {color:'#444444', verticalAlign:'top',} 
+        const styleCommand = {color:'#80DEEA', verticalAlign:'baseline',} 
+        const styleStatusBar = {color:'#444444',  background:'#eeeeee', height:'50px', fontSize: '70%', }
+        const styleConnect = {maxWidth:'100px', paddingTop:'20px', float:'left',}
+        const styleConnectIcon = {color:'#FFB74D', verticalAlign:'middle',} 
+        const styleStatusRight = {float:'right', marginTop:'-21px', marginRight:'10px', padding:'0px',}
+        const styleStatusBadge = {top: '30px', right: '5px',}
 
-const customContentStyle = {
-  width: '100%',
-  maxWidth: 'none',
-};
+        const customContentStyle = {
+          width: '100%',
+          maxWidth: 'none',
+        };
 
 
         return (

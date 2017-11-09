@@ -8,26 +8,33 @@ import $ from "jquery";
 
 class LogWindow extends React.Component {
 
+
+    /*
+     * constructor
+     */
     constructor(props) {
         super(props);
         this.state = {
             log:'',
-            };
-        this.getLog = this.getLog.bind(this);
+        };
+        //this.getLog = this.getLog.bind(this);
     }
 
+
+    /*
+     * componentDidMount
+     */
     componentDidMount() {
-            this.interval = setInterval(this.getLog.bind(this, this.props.webAPIParam) , 1500);
-            
+        //this.interval = setInterval(this.getLog.bind(this) , 1500);
+        this.interval = setInterval(this.getLog , 1500);
     }
 
-    componentWillUnmount() {
-    //
-    }
+    /*
+     * getLog
+     */
+    getLog = () => {
 
-    getLog(){
-
-        var requestParam = {"jsonrpc":"2.0", "method":this.props.webAPIParam, "params":"", "id":""}
+        const requestParam = {"jsonrpc":"2.0", "method":this.props.webAPIParam, "params":"", "id":""}
 
 
         $.ajax({
@@ -35,43 +42,44 @@ class LogWindow extends React.Component {
             url: 'http://vz01:8070/ReadLogFile',
             dataType: 'json',
             data: requestParam,
-        }).done(function(res) {
-                this.setState(prevState => ( {log : res.result.log, } ));
-                //scroll            
-                $('#logTextInput' + this.props.webAPIParam).animate({scrollTop: $('#logTextInput' + this.props.webAPIParam)[0].scrollHeight}, 'slow');
-
-
-        }.bind(this))
-            .fail(function(xhr, status, err) {
+            }
+        ).done(res => {
+                    this.setState(prevState => ( {log : res.result.log, } ));
+                    //scroll            
+                    $('#logTextInput' + this.props.webAPIParam).animate({scrollTop: $('#logTextInput' + this.props.webAPIParam)[0].scrollHeight}, 'slow');
+                }
+        ).fail((xhr, status, err) => {
                     console.error(status, err.toString());
-        }.bind(this));
-
-
+                }
+        );
     }
 
 
+    /*
+     * react render
+     */
     render() {
-        var stylePaper = {
+        const stylePaper = {
                          width:'620px',
                          height:'220px',
                          background:'linear-gradient(to bottom, #050505 0%, #050505 100%)',
                          marginBottom:'30px',
                          }
 
-        var stylePre = {whiteSpace:'pre-wrap', wordWrap:'normal', overflowY:'auto',
+        const stylePre = {whiteSpace:'pre-wrap', wordWrap:'normal', overflowY:'auto',
                          width:'600px',
                          height:'200px',
                          padding:'10px',
                          color:'#11FF22',
                          };
 
-        var styleLogTitle = {color:'#444444', verticalAlign:'top',} 
+        const styleLogTitle = {color:'#444444', verticalAlign:'top',} 
         return (
             <MuiThemeProvider  muiTheme={getMuiTheme(lightBaseTheme)}>
             <div>
 
                 <div style={styleLogTitle}>
-                   <FontIcon className="material-icons" style={styleLogTitle}>dvr</FontIcon> {this.props.serverName} Log 
+                   <FontIcon className="material-icons" style={styleLogTitle}>dvr</FontIcon> {this.props.serverName} Log
                 </div>
                 <div>
                     <Paper style={stylePaper} zDepth={2} >
